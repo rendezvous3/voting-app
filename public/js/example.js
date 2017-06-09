@@ -167,6 +167,87 @@ componentDidMount() {
 }
 
 
+// Updating state and immutability
+
+// Specifically, we want to increment the votes property on a product when the user votes for it.
+// We just discussed that we can only make state modifications using this.setState(). 
+// So while a component can update its state, we should treat the this.state object as immutable.
+// Part of the reason this is bad practice is because setState() is actually asynchronous.
+// There is no guarantee when React will update the state and re-render our component.
+
+// On the surface, it might appear as though we’ve treated this.state as immutable. However, the
+// push() method modifies the original array:
+
+console.log(this.state.nums); // [ 1, 2, 3 ] 
+this.state.nums.push(4);
+console.log(this.state.nums); // [ 1, 2, 3, 4] <-- Uh-oh!
+
+const nextNums = this.state.nums;
+nextNums.push(4);
+console.log(nextNums);
+// [ 1, 2, 3, 4] 
+console.log(this.state.nums); //[1,2,3,4] <--Nope!
+
+// Instead, we can use Array’s concat(). concat() creates a new array that contains the elements
+// of the array it was called on followed by the elements passed in as arguments.
+// With concat(), we can avoid mutating state:
+
+console.log(this.state.nums);
+// [ 1, 2, 3 ]
+const nextNums = this.state.nums.concat(4);
+console.log(nextNums);
+// [ 1, 2, 3, 4] 
+console.log(this.state.nums);
+// [ 1, 2, 3 ] <-- Unmodified!
+
+
+// Inside `ProductList`
+// Invalid handleProductUpVote(productId) {
+const products = this.state.products;
+ products.forEach((product) => {
+	if (product.id === productId) { 
+		product.votes = product.votes + 1;
+} });
+this.setState({ products: products, }); }
+
+
+// First, we use map() to traverse the products array. Importantly, map() returns a new array as opposed
+// to modifying the array this.state.products.
+
+// Next, we check if the current product matches productId.
+// If it does, we create a new object, copying over the properties from the original product object.
+// We then overwrite the votes property on our new product object.
+// We set it to the incremented vote count. We do this using Object’s assign() method
+// If the current product is not the one specified by productId, we return it unmodified:
+
+// Inside `ProductList`
+  handleProductUpVote(productId) {
+    const nextProducts = this.state.products.map((product) => {
+      if (product.id === productId) {
+        return Object.assign({}, product, {
+          votes: product.votes + 1,
+});
+} else {
+        return product;
+      }
+    });
+    this.setState({
+      products: nextProducts,
+    });
+}
+
+// While we’re creating a new array, the variable product here still references the product object sitting
+// on the original array in state. Therefore, if we make changes to it we’ll be modifying the object in state.
+// So we use Object.assign() to clone the original into a new object and then modify 
+// the votes property on that new object.
+
+// Our custom component method handleProductUpVote() is now referencing this.
+// We need to add a bind() call like the one we have for handleUpVote() in Product:
+
+this.handleProductUpVote = this.handleProductUpVote.bind(this);
+
+
+
 
 
 
