@@ -116,6 +116,57 @@ this.someFunction = this.someFunction.bind(this); }
 // logs a message to the console.
 
 
+// Using State
+
+// Whereas props are immutable and owned by a component’s parent, state is owned by the component. 
+// this.state is private to the component and as we’ll see can be updated with this.setState().
+// Critically, when the state or props of a component update, the component will re-render itself.
+// Every React component is rendered as a function of its this.props and this.state. 
+// This rendering is deterministic.
+// This means that given a set of props and a set of state, a React component will always render a single way
+// Because we are mutating the data for our products (the number of votes), 
+// we should consider this data to be stateful.
+// ProductList will be the owner of this state. It will then pass this state down as props to Product.
+// When adding state to a component, the first thing we do is define what the initial state should look like
+// Because constructor() is called when initializing our component,
+// it’s the best place to define our initial state
+// In React components, state is an object. The shape of our ProductList state object will look like this:
+
+
+class ProductList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      products: [],
+}; }
+  componentDidMount() {
+    this.setState({ products: Seed.products });
+}
+
+render() {
+		const products = this.state.products.sort((a, b) => (
+			b.votes - a.votes
+		));
+
+// Technically, because we don’t supply ProductList any props, we don’t need to propagate the props argument to super(). 
+// But it’s a good habit to get into and helps avoid odd bugs in the future
+
+
+// This is wrong
+// However, this is invalid. The only time we can modify the state in this manner is in constructor().
+// For all state modifications after the initial state, React provides components the method this.setState().
+// Never modify state outside of this.setState(). 
+// This function has important hooks around state modification that we would be bypassing.
+
+class ProductList extends React.Component { // ...
+  // Is this valid ?
+componentDidMount() { 
+	this.state = Seed.products;
+}
+// ...
+}
+
+
 
 
 
