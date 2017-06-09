@@ -247,6 +247,71 @@ this.setState({ products: products, }); }
 this.handleProductUpVote = this.handleProductUpVote.bind(this);
 
 
+// Refactoring with the Babel plugin
+// transform-class-properties
+
+// Because the community is still adopting this feature,
+// we expose you to both class component styles throughout the book.
+// We’re able to access this feature using Babel’s library of plugins and presets.
+
+// Refactoring Product
+
+// Inside Product, we defined the custom component method handleUpVote.
+// As we discussed, because handleUpVote is not part of the standard React component API,
+// React does not bind this inside the method to our component.
+// So we had to perform a manual binding trick inside constructor:
+
+class Product extends React.Component { constructor(props) {
+    super(props);
+    this.handleUpVote = this.handleUpVote.bind(this);
+  }
+  handleUpVote() {
+    this.props.onVote(this.props.id);
+} render() {
+
+// With the transform-class-properties plugin, we can write handleUpVote as an arrow function.
+// This will ensure this inside the function is bound to the component, as expected:
+
+class Product extends React.Component {
+  handleUpVote = () => (
+    this.props.onVote(this.props.id)
+);
+
+// Using this feature, we can drop constructor(). There is no need for the manual binding call.
+// Note that methods that are part of the standard React API, like render(),
+// will remain as class methods. If we write a custom component 
+// method in which we want this bound to the component, we write it as an arrow function.	
+
+// Refactoring ProductList
+
+class ProductList extends React.Component { 
+	constructor(props) {
+		super(props);
+		this.state = { products: [],};
+		this.handleProductUpVote = this.handleProductUpVote.bind(this); 
+}
+
+// We can give the same treatment to handleProductUpVote inside ProductList. In addition, property
+// initializers give us an alternative way to define the initial state of a component.
+// Before, we used constructor() in ProductList to both bind handleProductUpVote
+// to the compo- nent and define the component’s initial state:
+
+// With property initializers, we no longer need to use constructor.
+// Instead, we can define the initial state like this:
+
+// And, if we define handleProductUpVote as an arrow function, this will be bound to the component as desired:
+
+class ProductList extends React.Component {
+	state = {
+		products: [],
+	}
+}
+
+// In sum, we can use property initializers to make two refactors to our React components
+
+// 1. We can use arrow functions for custom component methods (and avoid having to bind this)
+// 2. We can define the initial state outside of constructor()
+
 
 
 
