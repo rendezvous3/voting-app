@@ -22,3 +22,6 @@ React.createElement('p', null, 'Hello, friend! I am a basic React component.')
 
 
 ReactDOM.render([what], [where]);
+
+
+// Using Props
